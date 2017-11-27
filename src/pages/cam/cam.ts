@@ -5,7 +5,7 @@ import { NavController } from 'ionic-angular';
   selector: 'page-cam',
   templateUrl: 'cam.html'
 })
-export class HomePage {
+export class CamPage {
 
   constructor(public navCtrl: NavController) {
 

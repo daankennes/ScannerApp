@@ -12,6 +12,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { Camera } from '@ionic-native/camera';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { IonicStorageModule } from '@ionic/storage';
+import { StudentServiceProvider } from '../providers/student-service/student-service';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { IonicStorageModule } from '@ionic/storage';
     SplashScreen,
     Camera,
     BarcodeScanner,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    StudentServiceProvider
   ]
 })
 export class AppModule {}

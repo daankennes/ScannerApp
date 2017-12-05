@@ -4,6 +4,7 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { StudentService } from '../../providers/student-service/student-service';
+import { Events } from 'ionic-angular';
 
 @Component({
   selector: 'page-cam',
@@ -15,10 +16,11 @@ export class CamPage {
   public students: any;
 
   constructor(public navCtrl: NavController, public barcodeScanner: BarcodeScanner,
-    private alertCtrl: AlertController, private storage: Storage, public studentService: StudentService) {
-      this.downloadStudentData();
-      //this.scan(); //camera direct openen bij starten applicatie
-  }
+    private alertCtrl: AlertController, private storage: Storage, public studentService: StudentService, public events: Events) {
+      events.subscribe('downloadfailed', () => {
+       this.checkStudentData();
+     });
+    }
 
   presentAddedPerson(text) : void {
     let alert = this.alertCtrl.create({
@@ -29,12 +31,36 @@ export class CamPage {
     alert.present();
   }
 
-  downloadStudentData() : void {
-   this.studentService.load()
-     .then(data => {
-       this.students = data;
-   });
+  ionViewDidEnter() {
+    this.checkStudentData();
   }
+
+  checkStudentData() : void { //check if data exists in storage, if not, download and save data
+
+    var found = false;
+
+    this.storage.forEach( (value, key, index) => {
+      if (key === "studentdata"){
+        this.students = value;
+        console.log("Got saved studentdata");
+        found = true;
+        //break;
+      }
+    }).then(() => {
+        if (!found){
+          this.studentService.load()
+            .then(data => {
+              this.students = data;
+              this.storage.set("studentdata", data);
+              console.log("Saved studentdata");
+          });
+        }
+      }, (err) => {
+          console.log(err);
+    });
+
+  }
+
 
   checkStudentID(barcodeData) : void {
     console.log(this.students.rows[0].doc.snr.length);
@@ -49,16 +75,7 @@ export class CamPage {
         console.log("gevonden");
         this.presentAddedPerson(this.students.rows[0].doc.snr[i].Voornaam + " " + this.students.rows[0].doc.snr[i].Naam + " wordt toegevoegd aan de lijst.");
 
-        if (this.storage.get('students')){
-          //var tempdata = "";
-          var tempdata = this.storage.get('students');
-          //tempdata.push(this.students.rows[0].doc.snr[i]);
-          this.storage.set('students', tempdata);
-        }
-        else {
-          var arr = [this.students.rows[0].doc.snr[i]];
-          this.storage.set('students', arr);
-        }
+        this.storage.set(this.students.rows[0].doc.snr[i].regnr, ["registeredstudent", this.students.rows[0].doc.snr[i].Voornaam, this.students.rows[0].doc.snr[i].Naam]);
 
       }
    }

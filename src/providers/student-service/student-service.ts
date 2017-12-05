@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AlertController } from 'ionic-angular';
+import { Events } from 'ionic-angular';
 
 /*
   Generated class for the StudentServiceProvider provider.
@@ -12,7 +14,7 @@ export class StudentService {
 
   data: any;
 
-  constructor(public http: HttpClient) {
+  constructor(public http: HttpClient, private alertCtrl: AlertController, public events: Events) {
     console.log('Hello StudentServiceProvider Provider');
   }
 
@@ -34,9 +36,25 @@ export class StudentService {
         // and save the data for later reference
         this.data = data;
         resolve(this.data);
-        console.log(this.data.rows[0].doc);
-      });
+      },
+        err => {
+          console.log('Something went wrong!');
+          let alert = this.alertCtrl.create({
+            title: 'Data onbereikbaar',
+            subTitle: "Kan benodigde data niet downloaden. Internetverbinding beschikbaar?",
+            buttons: [
+            {
+              text: 'Opnieuw proberen',
+              handler: () => {
+                this.events.publish('downloadfailed');
+              }
+            }
+          ]
+          });
+          alert.present();
+    });
   });
 }
+
 
 }

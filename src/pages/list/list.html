@@ -1,11 +1,16 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      List
+      Gescande Studenten
     </ion-title>
   </ion-navbar>
 </ion-header>
-
 <ion-content padding>
-
+  <!--<button ion-button color="primary" myitem (click)='listStudents();'>Vernieuwen</button>-->
+  <ion-list>
+     <button ion-item *ngFor="let student of students">
+       {{ student.Voornaam + " " + student.Naam }}
+     </button>
+   </ion-list>
+   <button ion-button color="danger" myitem (click)="deleteData();">Alle data verwijderen</button>
 </ion-content>

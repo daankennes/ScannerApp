@@ -14,6 +14,9 @@ import { Events } from 'ionic-angular';
 export class CamPage {
 
   public students: any;
+  public voornaam: string;
+  public naam: string;
+  public regnr: string;
 
   constructor(public navCtrl: NavController, public barcodeScanner: BarcodeScanner,
     private alertCtrl: AlertController, private storage: Storage, public studentService: StudentService, public events: Events) {
@@ -61,24 +64,53 @@ export class CamPage {
 
   }
 
-
   checkStudentID(barcodeData) : void {
     console.log(this.students.rows[0].doc.snr.length);
 
     var formattedbarcodeData = barcodeData.text.substring(4, 11) + "-" + barcodeData.text.substring(11, barcodeData.text.length);
     console.log(formattedbarcodeData);
     var found = false;
+    var alreadystored = false;
 
+    //loop through all students to find match
     for (var i = 0; i < this.students.rows[0].doc.snr.length; i++) {
+      //if match found
       if (this.students.rows[0].doc.snr[i].regnr == formattedbarcodeData){
         found = true;
-        console.log("gevonden");
-        this.presentAddedPerson(this.students.rows[0].doc.snr[i].Voornaam + " " + this.students.rows[0].doc.snr[i].Naam + " wordt toegevoegd aan de lijst.");
+        console.log("Student found");
 
-        this.storage.set(this.students.rows[0].doc.snr[i].regnr, ["registeredstudent", this.students.rows[0].doc.snr[i].Voornaam, this.students.rows[0].doc.snr[i].Naam]);
+        this.voornaam = this.students.rows[0].doc.snr[i].Voornaam;
+        this.naam = this.students.rows[0].doc.snr[i].Naam;
+        this.regnr = this.students.rows[0].doc.snr[i].regnr;
+
+        //loop through all already stored students to check if student has already been stored
+        this.storage.forEach( (value, key, index) => {
+        	console.log("This is the value", value)
+        	console.log("from the key", key)
+        	console.log("Index is", index)
+
+          if (value[1] == this.voornaam && value[2] == this.naam){
+            alreadystored = true;
+            console.log("Student already stored");
+          }
+        }).then(() => {
+           //student wasn't stored and will be stored now
+           if (found && !alreadystored){
+             this.storage.set(this.regnr, ["registeredstudent", this.voornaam, this.naam]);
+             this.presentAddedPerson(this.voornaam + " " + this.naam + " is toegevoegd aan lijst!");
+           }
+           //student was already stored
+           else{
+             this.presentAddedPerson(this.voornaam + " " + this.naam + " stond al in lijst.");
+           }
+
+          }, (err) => {
+              console.log(err)
+        });
 
       }
    }
+   //no match found with all students
    if (!found){
      this.presentAddedPerson("Student niet gevonden.");
    }
@@ -86,9 +118,7 @@ export class CamPage {
 
   public scan(){
     this.barcodeScanner.scan().then((barcodeData) => {
-       console.log(barcodeData);
        this.checkStudentID(barcodeData);
-       //this.storage.set('snumber', barcodeData.text); //voor nu laatst gescande value storen
       }, (err) => {
           console.log(err)
     });

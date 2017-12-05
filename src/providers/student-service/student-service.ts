@@ -15,7 +15,15 @@ export class StudentService {
   data: any;
 
   constructor(public http: HttpClient, private alertCtrl: AlertController, public events: Events) {
-    console.log('Hello StudentServiceProvider Provider');
+    console.log('StudentServiceProvider Provider');
+    events.subscribe('datacleared', () => {
+     this.clearData();
+    });
+  }
+
+  clearData(){
+    this.data = null;
+    console.log("provider data cleared");
   }
 
   load() {

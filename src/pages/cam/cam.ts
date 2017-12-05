@@ -117,7 +117,14 @@ export class CamPage {
   }
 
   public scan(){
-    this.barcodeScanner.scan().then((barcodeData) => {
+    this.barcodeScanner.scan(
+      {
+          showFlipCameraButton : true, // iOS and Android
+          showTorchButton : true, // iOS and Android
+          resultDisplayDuration: 0, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+          disableSuccessBeep: false // iOS and Android
+      }
+    ).then((barcodeData) => {
        this.checkStudentID(barcodeData);
       }, (err) => {
           console.log(err)

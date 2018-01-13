@@ -13,6 +13,10 @@ import { Camera } from '@ionic-native/camera';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { IonicStorageModule } from '@ionic/storage';
 import { HttpClientModule } from '@angular/common/http';
+import { EmailComposer } from '@ionic-native/email-composer';
+import { File } from '@ionic-native/file';
+import { FileOpener } from '@ionic-native/file-opener';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 
 @NgModule({
@@ -40,6 +44,10 @@ import { HttpClientModule } from '@angular/common/http';
     SplashScreen,
     Camera,
     BarcodeScanner,
+    EmailComposer,
+    File,
+    FileOpener,
+    SocialSharing,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

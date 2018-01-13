@@ -17,10 +17,11 @@ export class CamPage {
   public voornaam: string;
   public naam: string;
   public regnr: string;
+  public count: 0;
 
   constructor(public navCtrl: NavController, public barcodeScanner: BarcodeScanner,
     private alertCtrl: AlertController, private storage: Storage, public studentService: StudentService, public events: Events) {
-      events.subscribe('downloadfailed', () => {
+     events.subscribe('downloadfailed', () => {
        this.checkStudentData();
      });
     }
@@ -40,17 +41,24 @@ export class CamPage {
 
   checkStudentData() : void { //check if data exists in storage, if not, download and save data
 
-    var found = false;
+    var studfound = false;
+    var countfound = false;
 
     this.storage.forEach( (value, key, index) => {
       if (key === "studentdata"){
         this.students = value;
         console.log("Got saved studentdata");
-        found = true;
+        studfound = true;
         //break;
       }
+
+      if (key === "count"){
+        this.count = value;
+        countfound = true;
+        console.log("count found");
+      }
     }).then(() => {
-        if (!found){
+        if (!studfound){
           this.studentService.load()
             .then(data => {
               this.students = data;
@@ -58,10 +66,61 @@ export class CamPage {
               console.log("Saved studentdata");
           });
         }
+        if (!countfound){
+          this.storage.set("count", 0);
+          this.count = 0;
+          console.log("count set");
+        }
       }, (err) => {
           console.log(err);
     });
 
+  }
+
+  showNameAlert() {
+
+    let alert = this.alertCtrl.create({
+      title: 'Persoon toevoegen',
+      subTitle: 'Geef de voor -en achternaam op.',
+      inputs: [
+      {
+        name: 'voornaam',
+        placeholder: 'Voornaam'
+      },
+      {
+        name: 'achternaam',
+        placeholder: 'Achternaam',
+      }
+    ],
+    buttons: [
+      {
+        text: 'Annuleren',
+        role: 'cancel',
+        handler: data => {
+          console.log('Cancel clicked');
+        }
+      },
+      {
+        text: 'Toevoegen',
+        handler: data => {
+          if (data.voornaam != "" && data.achternaam != "") {
+            this.addStudentWithoutCard(data.voornaam, data.achternaam);
+          } else {
+            this.presentAddedPerson("Ongeldige voor -en/of achternaam");
+          }
+        }
+      }
+    ]
+    });
+    alert.present();
+
+  }
+
+  addStudentWithoutCard(voornaam, naam){
+    this.storage.set(this.count.toString(), ["registeredstudent", voornaam, naam]);
+    this.presentAddedPerson(voornaam + " " + naam + " is toegevoegd aan lijst!");
+    this.count++;
+    this.storage.set("count", this.count);
   }
 
   checkStudentID(barcodeData) : void {
@@ -111,8 +170,9 @@ export class CamPage {
       }
    }
    //no match found with all students
-   if (!found){
+   if (!found && barcodeData.cancelled != true){
      this.presentAddedPerson("Student niet gevonden.");
+     console.log(barcodeData);
    }
   }
 

@@ -3,15 +3,26 @@
     <ion-title>
       Gescande Studenten
     </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="createPdf()">
+        <ion-icon style="zoom:1.5;" color="primary" name="ios-send"></ion-icon>
+      </button>
+      <button ion-button icon-only (click)="deleteData()">
+        <ion-icon style="zoom:1.5;" color="danger" name="ios-trash"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 <ion-content padding>
   <!--<button ion-button color="primary" myitem (click)='listStudents();'>Vernieuwen</button>-->
   <p>Lijst:</p>
+  <p ion-text color="danger" *ngIf="students.length === 0">Nog geen studenten geregistreerd.</p>
   <ion-list>
      <button ion-item *ngFor="let student of students">
-       {{ student.Voornaam + " " + student.Naam }}
+       <!--{{ student.Voornaam + " " + student.Naam }}-->
+       {{student}}
      </button>
    </ion-list>
-   <button ion-button color="danger" full myitem (click)="deleteData();">Data verwijderen</button>
+   <!--<button ion-button color="primary" full myitem (click)="createPdf();">Lijst opslaan</button>
+   <button ion-button color="danger" full myitem (click)="deleteData();">Data verwijderen</button>-->
 </ion-content>

@@ -1,13 +1,11 @@
-<ion-header>
-  <ion-navbar>
-    <ion-title>Scannen</ion-title>
-  </ion-navbar>
-</ion-header>
-
-<ion-content padding>
+<ion-content>
+  <!--<ion-img width="100%" height="50%" src="http://gdj.graphicdesignjunction.com/wp-content/uploads/2015/04/free_pattern10.jpg"></ion-img>-->
   <!--<h2>Scap app</h2>
   <p>
     Use button below to scan.
   </p>-->
-  <button ion-button full myitem (click)='scan();'>Nieuwe leerling scannen</button>
+  <ion-fab center middle>
+    <button ion-fab icon-only (click)='scan();' color="primary"><ion-icon style="zoom:4.0;" name="md-qr-scanner"></ion-icon></button>
+  </ion-fab>
+  <button ion-button myitem (click)='showNameAlert();' full clear color="secondary" style="position: absolute;bottom: 4%;">Studentenkaart vergeten?</button>
 </ion-content>

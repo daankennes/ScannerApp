@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
-import { Events } from 'ionic-angular';
+import { Events, LoadingController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
-import { EmailComposer } from '@ionic-native/email-composer';
 import { File } from '@ionic-native/file';
 import { FileOpener } from '@ionic-native/file-opener';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -21,8 +20,9 @@ export class ListPage {
   public students : Array<any>;
   public str : string;
   pdfObj = null;
+  public loading: any;
 
-  constructor(public navCtrl: NavController, private storage: Storage, public events: Events, private alertCtrl: AlertController, private emailComposer: EmailComposer, private plt: Platform, private file: File, private fileOpener: FileOpener, private socialSharing: SocialSharing) {
+  constructor(public navCtrl: NavController, private storage: Storage, public events: Events, private alertCtrl: AlertController, private plt: Platform, private file: File, private fileOpener: FileOpener, private socialSharing: SocialSharing, public loadingCtrl: LoadingController) {
     this.students = [];
   }
 
@@ -31,6 +31,7 @@ export class ListPage {
   }
 
   createPdf() {
+    this.startLoading();
     let studarray = JSON.parse(JSON.stringify(this.students));
     studarray.sort();
     let docDefinition = {
@@ -64,6 +65,7 @@ export class ListPage {
   }
 
   sendPdf() {
+
     if (this.plt.is('cordova')) {
       this.pdfObj.getBuffer((buffer) => {
         var blob = new Blob([buffer], { type: 'application/pdf' });
@@ -81,12 +83,13 @@ export class ListPage {
             files: [path], // an array of filenames either locally or remotely
             chooserTitle: 'Kies een app'
           }
-
+          this.stopLoading();
           this.socialSharing.shareWithOptions(options);
         })
       });
     } else {
       // On a browser simply use download!
+      this.stopLoading();
       this.pdfObj.download();
     }
   }
@@ -153,8 +156,23 @@ export class ListPage {
     });
     alert.present();
 
+  }
 
+  startLoading(){
 
+    this.loading = this.loadingCtrl.create({
+      spinner: 'bubbles',
+      content: 'Even geduld...'
+    });
+
+    this.loading.present();
+  }
+
+  stopLoading(){
+    if (this.loading != null){
+      this.loading.dismiss();
+      this.loading = null;
+    }
   }
 
   listStudents() {

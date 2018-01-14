@@ -169,7 +169,7 @@ export class CamPage {
 
       }
    }
-   //no match found with all students
+   //no match found in students
    if (!found && barcodeData.cancelled != true){
      this.presentAddedPerson("Student niet gevonden.");
      console.log(barcodeData);

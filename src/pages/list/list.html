@@ -4,7 +4,7 @@
       Gescande Studenten
     </ion-title>
     <ion-buttons end>
-      <button ion-button icon-only (click)="createPdf()">
+      <button ion-button icon-only (click)="createPdf()" [disabled]="students.length < 1">
         <ion-icon style="zoom:1.5;" color="primary" name="ios-send"></ion-icon>
       </button>
       <button ion-button icon-only (click)="deleteData()">

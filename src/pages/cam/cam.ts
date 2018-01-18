@@ -117,6 +117,51 @@ export class CamPage {
   }
 
   addStudentWithoutCard(voornaam, naam){
+
+    var alreadystored;
+    
+    this.storage.forEach( (value, key, index) => {
+
+      if (value[1] == voornaam && value[2] == naam){
+        alreadystored = true;
+        console.log("Student already stored");
+      }
+    }).then(() => {
+       //student wasn't stored and will be stored now
+       if (!alreadystored){
+          this.storeStudentWithoutID(voornaam, naam);
+       }
+       //student was already stored
+       else {
+         let alert = this.alertCtrl.create({
+           title: 'Persoon al in lijst',
+           subTitle: 'Er bevindt zich al een persoon in de lijst met deze voor -en achternaam.',
+           buttons: [
+             {
+               text: 'Annuleren',
+               role: 'cancel',
+               handler: data => {
+                 console.log('Cancel clicked');
+               }
+             },
+             {
+               text: 'Toch toevoegen',
+               handler: data => {
+                 this.storeStudentWithoutID(voornaam, naam);
+               }
+             }
+           ]
+         });
+         alert.present();
+       }
+
+      }, (err) => {
+          console.log(err)
+    });
+
+  }
+
+  storeStudentWithoutID(voornaam, naam){
     this.storage.set(this.count.toString(), ["registeredstudent", voornaam, naam]);
     this.presentAddedPerson(voornaam + " " + naam + " is toegevoegd aan lijst!");
     this.count++;

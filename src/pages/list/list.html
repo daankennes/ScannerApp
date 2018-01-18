@@ -14,14 +14,14 @@
   </ion-navbar>
 </ion-header>
 <ion-content padding>
-  <!--<button ion-button color="primary" myitem (click)='listStudents();'>Vernieuwen</button>-->
-  <p>Lijst:</p>
   <p ion-text color="danger" *ngIf="students.length === 0">Nog geen studenten geregistreerd.</p>
   <ion-list>
-     <button ion-item *ngFor="let student of students">
-       <!--{{ student.Voornaam + " " + student.Naam }}-->
-       {{student}}
-     </button>
+    <ion-item-sliding *ngFor="let student of students">
+      <ion-item>{{ student.Voornaam + " " + student.Naam }}</ion-item>
+      <ion-item-options>
+        <button ion-button color="danger" (click)="removeItem(student)">Verwijder</button>
+      </ion-item-options>
+    </ion-item-sliding>
    </ion-list>
    <!--<button ion-button color="primary" full myitem (click)="createPdf();">Lijst opslaan</button>
    <button ion-button color="danger" full myitem (click)="deleteData();">Data verwijderen</button>-->

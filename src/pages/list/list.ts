@@ -26,18 +26,35 @@ export class ListPage {
     this.students = [];
   }
 
-  ionViewDidEnter() {
+  ionViewWillEnter() {
     this.listStudents();
+  }
+
+  removeItem(student) {
+    let index = this.students.findIndex(obj => obj.Voornaam == student.Voornaam && obj.Naam == student.Naam);
+    console.log(index);
+    this.students.splice(index, 1);
+    this.storage.remove(student.Key);
+    console.log(student.Key + " removed");
   }
 
   createPdf() {
     this.startLoading();
-    let studarray = JSON.parse(JSON.stringify(this.students));
+
+    let studarray = [];
+    let temparray = [];
+
+    for (let x = 0; x < this.students.length; x++){
+        temparray.push(this.students[x].Voornaam + " " + this.students[x].Naam);
+    }
+
+    studarray = JSON.parse(JSON.stringify(temparray));
     studarray.sort();
+    console.log(studarray);
     let docDefinition = {
       content: [
-        { text: 'Lijst geregistreerde studenten', style: 'header' },
-        { text: new Date().toTimeString(), alignment: 'right' },
+        { text: 'Lijst met geregistreerde studenten van AP Hogeschool:', style: 'header' },
+        { text: new Date().toLocaleTimeString(), style: 'small', alignment: 'right' },
 
         {
           ul: studarray
@@ -45,18 +62,11 @@ export class ListPage {
       ],
       styles: {
         header: {
-          fontSize: 18,
-          bold: true,
-        },
-        subheader: {
           fontSize: 14,
-          bold: true,
-          margin: [0, 15, 0, 0]
+          bold: true
         },
-        story: {
-          italic: true,
-          alignment: 'center',
-          width: '50%',
+        small: {
+          fontSize: 10
         }
       }
     }
@@ -188,11 +198,12 @@ export class ListPage {
 
       if (value[0] == "registeredstudent"){ //check if key value pair in storage is a scanned student
 
-        /*if (this.students.filter(s => s.Voornaam == value[1] && s.Naam == value[2]).length < 1) { //if students array does not yet contain the student, push the json object
-          //var jsonobj = {"Voornaam": value[1], "Naam": value[2]};
+        //if (this.students.filter(s => s.Voornaam == value[1] && s.Naam == value[2]).length < 1) { //if students array does not yet contain the student, push the json object
+          let jsonobj = {"Voornaam": value[1], "Naam": value[2], "Key": key };
+          this.students.push(jsonobj);
           console.log("Student added to array");
-        }*/
-        this.students.push(value[1] + " " + value[2]);
+        //}
+        //this.students.push(value[1] + " " + value[2]);
 
       }
     })
